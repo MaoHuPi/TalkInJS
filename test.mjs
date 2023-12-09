@@ -5,28 +5,28 @@ const I = new Pronoun(new Ordinal(1));
 
 /* Indefinite Article */
 class Dog extends Something{
-	static #subset = [];
-	constructor(info = {}){super();}
-	static contain(something){
-		Dog.#subset.push(something);
-	}
-	static _contain(something){
-		return Dog.#subset.includes(something);
-	}
+    static #subset = [];
+    constructor(info = {}){super();}
+    static contain(something){
+        Dog.#subset.push(something);
+    }
+    static _contain(something){
+        return Dog.#subset.includes(something);
+    }
 }
 I.am(a(Dog));
 console.log('Am \'I\' a \'Dog\'?', I._am(Dog)); // true
 
 /* Definite Article */
 class Cat extends Something{
-	static #subset = [];
-	constructor(info = {}){super();}
-	static contain(something){
-		Cat.#subset.push(something);
-	}
-	static _contain(something){
-		return Cat.#subset.includes(something);
-	}
+    static #subset = [];
+    constructor(info = {}){super();}
+    static contain(something){
+        Cat.#subset.push(something);
+    }
+    static _contain(something){
+        return Cat.#subset.includes(something);
+    }
 }
 let the_cat = the(Cat);
 console.log('Is \'the_cat\' a \'Cat\'?', the_cat._belongs(Cat)); // true
