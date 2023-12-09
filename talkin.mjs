@@ -2,23 +2,52 @@
 function isClass(sth){return typeof sth == 'function' && sth?.prototype?.constructor === sth;}
 
 /* Prifix Function */
-export function a(sth){return sth;}
-export function an(sth){return sth;}
 export function the(sth){if(isClass(sth)) return new (sth)(); else return sth;}
 
-/* Class */
-export class Something{
+/* Class about Time */
+export class Timeline {
+    #elements = [];
+    push(...elements){this.#elements.push(...elements);}
+    pass(time, baseOn = 1){
+        for(let i = 0; i < Math.floor(time/baseOn); i++){
+            this.#elements.forEach(element => element.timePass(baseOn));
+        }
+    }
+}
+export class State {
+    #func = function(){};
+    constructor(func = function(){}){
+        this.#func = func;
+    }
+    affect(time, value, stateData){
+        this.#func.bind(stateData)(value*time);
+    }
+}
+export class StateValuePair {
+    #state;
+    #value;
+    constructor(state, value = 1){
+        this.#state = state;
+        this.#value = value;
+    }
+    get state(){return this.#state;}
+    get value(){return this.#value;}
+}
+
+/* Class about Things */
+export class Something {
     static #subset = [];
     #entitySubset = [];
     #superset = [];
+    #initTime = 0;
+    #stateData = new Map();
     constructor(info = {}){
+        this.#initTime = Date.now();
     }
-    static contain(sth){
-        Something.#subset.push(sth);
-    }
-    static _contain(sth){
-        return Something.#subset.includes(sth);
-    }
+    static contain(sth){Something.#subset.push(sth);}
+    static _contain(sth){return Something.#subset.includes(sth);}
+    get initTime(){return this.#initTime;}
+    // get stateData(){return this.#stateData;}
     contain(sth){
         this.#entitySubset.push(sth);
     }
@@ -28,18 +57,34 @@ export class Something{
     belongs(type, autoEqual = true){
         this.#superset.push(type);
         type.contain(this);
-        if(autoEqual && type?.belongs) type.belongs(this, false);
+        if(autoEqual && type?.belongs){
+            if(this.initTime > type.initTime) this.binding(type);
+            else type.binding(this);
+            type.belongs(this, false);
+        };
     }
-    _belongs(type){
+    _belongs(type, autoEqualList = []){
+        autoEqualList.push(this);
         return(
             (this.#superset.includes(type) && type._contain(this)) || // if it has set to belong to the type
             type === this?.__proto__?.constructor || // if the type is it's class
-            (this.#superset.map(sth => sth?._belongs ? sth._belongs(type) : false).includes(true)) || // if it's superset belongs to the type
+            (this.#superset
+                .filter(sth => !autoEqualList.includes(sth))
+                .map(sth => sth?._belongs ? sth._belongs(type, autoEqualList) : false)
+                .includes(true)
+            ) || // if it's superset belongs to the type
             this == type // if the type is itself
         );
     }
+    ownState(state, value){this.#stateData.set(state, value);}
+    _ownState(state){return this.#stateData.get(state) !== undefined;}
+    how(state){return this.#stateData.get(state);}
+    binding(sth){this.#stateData = sth.stateData;}
+    timePass(time){
+        [...this.#stateData.keys()].forEach(state => state.affect(time, this.#stateData.get(state), this.#stateData));
+    }
 }
-export class Ordinal extends Something{
+export class Ordinal extends Something {
     static #subset = [];
     static #data = new Map();
     #number = 0;
@@ -47,12 +92,8 @@ export class Ordinal extends Something{
         super();
         this.#number = number;
     }
-    static contain(sth){
-        Ordinal.#subset.push(sth);
-    }
-    static _contain(sth){
-        return Ordinal.#subset.includes(sth);
-    }
+    static contain(sth){Ordinal.#subset.push(sth);}
+    static _contain(sth){return Ordinal.#subset.includes(sth);}
     contain(sth){
         if(Ordinal.#data[this] == undefined){Ordinal.#data[this] = [];}
         Ordinal.#data[this].push(sth);
@@ -63,22 +104,57 @@ export class Ordinal extends Something{
     get number(){return this.#number;}
     set number(number){this.#number = number;}
 }
-export class Pronoun extends Something{
+// export class Feeling extends Something {
+//     static #subset = [];
+//     static #data = new Map();
+//     constructor(degree = 1){
+//         super();
+//         this.degree = degree;
+//     }
+//     static contain(sth){Feeling.#subset.push(sth);}
+//     static _contain(sth){return Feeling.#subset.includes(sth);}
+//     contain(sth){
+//         if(Feeling.#data[this] == undefined){Feeling.#data[this] = [];}
+//         Feeling.#data[this].push(sth);
+//     }
+//     _contain(sth){
+//         return Feeling.#data[this] !== undefined && Feeling.#data[this].includes(sth);
+//     }
+// }
+export class Pronoun extends Something {
     static #subset = [];
     constructor(personSingular){
         super();
         this.personSingular = personSingular ? personSingular : new Ordinal(3);
     }
-    static contain(sth){
-        Pronoun.#subset.push(sth);
+    static contain(sth){Pronoun.#subset.push(sth);}
+    static _contain(sth){return Pronoun.#subset.includes(sth);}
+    am (sth){if(this.personSingular.number == 1) this.be(sth); else throw Error;}
+    are(sth){if(this.personSingular.number == 2) this.be(sth); else throw Error;}
+    is (sth){if(this.personSingular.number == 3) this.be(sth); else throw Error;}
+    _am (sth){if(this.personSingular.number == 1) return this._be(sth); else throw Error;}
+    _are(sth){if(this.personSingular.number == 2) return this._be(sth); else throw Error;}
+    _is (sth){if(this.personSingular.number == 3) return this._be(sth); else throw Error;}
+    be(sth){
+        if(sth.constructor === State){
+            this.ownState(sth, 1);
+        }
+        else if(sth.constructor === StateValuePair){
+            this.ownState(sth.state, sth.value);
+        }
+        else{
+            this.belongs(sth);
+        }
     }
-    static _contain(sth){
-        return Pronoun.#subset.includes(sth);
+    _be(sth){
+        if(sth.constructor === State){
+            return this._ownState(sth);
+        }
+        else if(sth.constructor === StateValuePair){
+            return this.how(sth.state) === sth.value;
+        }
+        else{
+            return this._belongs(sth);
+        }
     }
-    am (...param){if(this.personSingular.number == 1) super.belongs(...param); else throw Error;}
-    are(...param){if(this.personSingular.number == 2) super.belongs(...param); else throw Error;}
-    is (...param){if(this.personSingular.number == 3) super.belongs(...param); else throw Error;}
-    _am (...param){if(this.personSingular.number == 1) return super._belongs(...param); else throw Error;}
-    _are(...param){if(this.personSingular.number == 2) return super._belongs(...param); else throw Error;}
-    _is (...param){if(this.personSingular.number == 3) return super._belongs(...param); else throw Error;}
 }

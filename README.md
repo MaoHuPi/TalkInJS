@@ -8,7 +8,7 @@
 
 * Import 
 	```mjs
-	import {a, an, the, Something, Ordinal, Pronoun} from './talkin.mjs';
+	import {the, Something, Ordinal, Pronoun} from './talkin.mjs';
 	```
 
 * Personal Pronoun
@@ -28,7 +28,7 @@
 	        return Dog.#subset.includes(something);
 	    }
 	}
-	I.am(a(Dog));
+	I.am(Dog);
 	console.log('Am \'I\' a \'Dog\'?', I._am(Dog)); // true
 	```
 
@@ -60,4 +60,28 @@
 	console.log('Is \'first\' \'I\'?', first._belongs(I)); // true
 	let anotherFirst = new Ordinal(1);
 	console.log('Is \'anotherFirst\' \'I\'?', anotherFirst._belongs(I)); // true
+	```
+
+* Feeling and State
+	```js
+	const I = new Pronoun(new Ordinal(1));
+	const hour = 1;
+	function very(state){
+	    return new StateValuePair(state, 1.2);
+	}
+	function quite(state){
+	    return new StateValuePair(state, 0.1);
+	}
+	let world = new Timeline();
+	let satiety = new State();
+	let hungry = new State(function(deltaVelue){
+	    this.set(satiety, this.get(satiety) - deltaVelue);
+	});
+	world.push(I);
+	I.am(very(satiety));
+	I.am(quite(hungry));
+	console.log("Before '10 hour', 'satiety':", I.how(satiety)); // 1.2
+	world.pass(10*hour, hour);
+	console.log("After  '10 hour', 'satiety':", I.how(satiety)); // 1.20000000000000004
+	console.log("Am 'I' 'hungry'?", I._am(hungry)); // true
 	```
