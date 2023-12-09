@@ -6,63 +6,58 @@
 
 ## Examples
 
-* Import 
-	```mjs
-	import {the, Something, Ordinal, Pronoun} from './talkin.mjs';
+* Import
+	```js
+	import {the, Something, Ordinal, State, Pronoun, Timeline, StateValuePair, thingsInit} from './talkin.mjs';
+	
 	```
 
-* Personal Pronoun
+*  Personal Pronoun 
 	```js
 	const I = new Pronoun(new Ordinal(1));
+	
 	```
 
-* Indefinite Article
+*  Indefinite Article 
 	```js
-	class Dog extends Something{
-	    static #subset = [];
-	    constructor(info = {}){super();}
-	    static contain(something){
-	        Dog.#subset.push(something);
-	    }
-	    static _contain(something){
-	        return Dog.#subset.includes(something);
-	    }
-	}
+	const I = new Pronoun(new Ordinal(1));
+	let Dog = thingsInit(class Dog extends Something {
+	    constructor(){super();}
+	});
 	I.am(Dog);
-	console.log('Am \'I\' a \'Dog\'?', I._am(Dog)); // true
+	console.log("Am 'I' a 'Dog'?", I._am(Dog)); // true
+	
 	```
 
-* Definite Article
+*  Definite Article 
 	```js
-	class Cat extends Something{
-	    static #subset = [];
-	    constructor(info = {}){super();}
-	    static contain(something){
-	        Cat.#subset.push(something);
-	    }
-	    static _contain(something){
-	        return Cat.#subset.includes(something);
-	    }
-	}
+	const I = new Pronoun(new Ordinal(1));
+	let Cat = thingsInit(class Cat extends Something {
+	    constructor(){super();}
+	});
 	let the_cat = the(Cat);
-	console.log('Is \'the_cat\' a \'Cat\'?', the_cat._belongs(Cat)); // true
+	console.log("Is 'the_cat' a 'Cat'?", the_cat._belongs(Cat)); // true
 	I.am(the_cat);
-	console.log('Am \'I\' \'the_cat\'?', I._am(the_cat)); // true
-	console.log('Am \'I\' a \'Cat\'?', I._am(Cat)); // true
-	console.log('Is \'the_cat\' \'I\'?', the_cat._belongs(I)); // true
+	console.log("Am 'I' 'the_cat'?", I._am(the_cat)); // true
+	console.log("Am 'I' a 'Cat'?", I._am(Cat)); // true
+	console.log("Is 'the_cat' 'I'?", the_cat._belongs(I)); // true
+	
 	```
 
-* Ordinal
+*  Ordinal 
 	```js
+	const I = new Pronoun(new Ordinal(1));
 	let first = new Ordinal(1);
 	I.am(the(first)); // the(first) === first
-	console.log('Am \'I\' the \'first\'?', I._am(first)); // true
-	console.log('Is \'first\' \'I\'?', first._belongs(I)); // true
+	console.log("Am 'I' the 'first'?", I._am(first)); // true
+	console.log("Is 'first' 'I'?", first._belongs(I)); // true
 	let anotherFirst = new Ordinal(1);
-	console.log('Is \'anotherFirst\' \'I\'?', anotherFirst._belongs(I)); // true
+	console.log("Is 'anotherFirst' 'I'?", anotherFirst._belongs(I)); // true
+	console.log("Am 'I' 'Ordinal'?", I._am(Ordinal)); // true, but must be false
+	
 	```
 
-* Feeling and State
+*  Feeling and State 
 	```js
 	const I = new Pronoun(new Ordinal(1));
 	const hour = 1;

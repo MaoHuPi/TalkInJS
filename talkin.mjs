@@ -1,5 +1,15 @@
 /* Basic Method */
-function isClass(sth){return typeof sth == 'function' && sth?.prototype?.constructor === sth;}
+function isClass(v) {
+    return typeof v === 'function' && /^\s*class\s+/.test(v.toString());
+}
+export function thingsInit(sth){
+    if(isClass(sth)){
+        sth.prototype.subset = [];
+        sth.contain = function(target){sth.prototype.subset.push(target);};
+        sth._contain = function(target){return sth.prototype.subset.includes(target);};
+    }
+    return sth;
+}
 
 /* Prifix Function */
 export function the(sth){if(isClass(sth)) return new (sth)(); else return sth;}
@@ -36,7 +46,7 @@ export class StateValuePair {
 
 /* Class about Things */
 export class Something {
-    static #subset = [];
+    // static #subset = [];
     #entitySubset = [];
     #superset = [];
     #initTime = 0;
@@ -44,8 +54,8 @@ export class Something {
     constructor(info = {}){
         this.#initTime = Date.now();
     }
-    static contain(sth){Something.#subset.push(sth);}
-    static _contain(sth){return Something.#subset.includes(sth);}
+    // static contain(sth){Something.#subset.push(sth);}
+    // static _contain(sth){return Something.#subset.includes(sth);}
     get initTime(){return this.#initTime;}
     // get stateData(){return this.#stateData;}
     contain(sth){
@@ -84,16 +94,17 @@ export class Something {
         [...this.#stateData.keys()].forEach(state => state.affect(time, this.#stateData.get(state), this.#stateData));
     }
 }
+thingsInit(Something);
 export class Ordinal extends Something {
-    static #subset = [];
+    // static #subset = [];
     static #data = new Map();
     #number = 0;
     constructor(number = 1){
         super();
         this.#number = number;
     }
-    static contain(sth){Ordinal.#subset.push(sth);}
-    static _contain(sth){return Ordinal.#subset.includes(sth);}
+    // static contain(sth){Ordinal.#subset.push(sth);}
+    // static _contain(sth){return Ordinal.#subset.includes(sth);}
     contain(sth){
         if(Ordinal.#data[this] == undefined){Ordinal.#data[this] = [];}
         Ordinal.#data[this].push(sth);
@@ -104,31 +115,15 @@ export class Ordinal extends Something {
     get number(){return this.#number;}
     set number(number){this.#number = number;}
 }
-// export class Feeling extends Something {
-//     static #subset = [];
-//     static #data = new Map();
-//     constructor(degree = 1){
-//         super();
-//         this.degree = degree;
-//     }
-//     static contain(sth){Feeling.#subset.push(sth);}
-//     static _contain(sth){return Feeling.#subset.includes(sth);}
-//     contain(sth){
-//         if(Feeling.#data[this] == undefined){Feeling.#data[this] = [];}
-//         Feeling.#data[this].push(sth);
-//     }
-//     _contain(sth){
-//         return Feeling.#data[this] !== undefined && Feeling.#data[this].includes(sth);
-//     }
-// }
+thingsInit(Ordinal);
 export class Pronoun extends Something {
-    static #subset = [];
+    // static #subset = [];
     constructor(personSingular){
         super();
         this.personSingular = personSingular ? personSingular : new Ordinal(3);
     }
-    static contain(sth){Pronoun.#subset.push(sth);}
-    static _contain(sth){return Pronoun.#subset.includes(sth);}
+    // static contain(sth){Pronoun.#subset.push(sth);}
+    // static _contain(sth){return Pronoun.#subset.includes(sth);}
     am (sth){if(this.personSingular.number == 1) this.be(sth); else throw Error;}
     are(sth){if(this.personSingular.number == 2) this.be(sth); else throw Error;}
     is (sth){if(this.personSingular.number == 3) this.be(sth); else throw Error;}
@@ -158,3 +153,4 @@ export class Pronoun extends Something {
         }
     }
 }
+thingsInit(Pronoun);
