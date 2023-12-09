@@ -5,17 +5,13 @@ import {the, Something, Ordinal, State, Pronoun, Timeline, StateValuePair, thing
 
 /* Indefinite Article */
 // const I = new Pronoun(new Ordinal(1));
-// let Dog = thingsInit(class Dog extends Something {
-//     constructor(){super();}
-// });
+// let Dog = thingsInit(class Dog extends Something {});
 // I.am(Dog);
 // console.log("Am 'I' a 'Dog'?", I._am(Dog)); // true
 
 /* Definite Article */
 // const I = new Pronoun(new Ordinal(1));
-// let Cat = thingsInit(class Cat extends Something {
-//     constructor(){super();}
-// });
+// let Cat = thingsInit(class Cat extends Something {});
 // let the_cat = the(Cat);
 // console.log("Is 'the_cat' a 'Cat'?", the_cat._belongs(Cat)); // true
 // I.am(the_cat);
