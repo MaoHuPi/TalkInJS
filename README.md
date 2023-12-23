@@ -7,6 +7,7 @@
 ## Examples
 
 * Import
+
 	```js
 	import {the, Something, Ordinal, State, Pronoun, Timeline, StateValuePair, thingsInit} from './talkin.mjs';
 	
@@ -21,9 +22,7 @@
 *  Indefinite Article 
 	```js
 	const I = new Pronoun(new Ordinal(1));
-	let Dog = thingsInit(class Dog extends Something {
-	    constructor(){super();}
-	});
+	let Dog = thingsInit(class Dog extends Something {});
 	I.am(Dog);
 	console.log("Am 'I' a 'Dog'?", I._am(Dog)); // true
 	
@@ -32,9 +31,7 @@
 *  Definite Article 
 	```js
 	const I = new Pronoun(new Ordinal(1));
-	let Cat = thingsInit(class Cat extends Something {
-	    constructor(){super();}
-	});
+	let Cat = thingsInit(class Cat extends Something {});
 	let the_cat = the(Cat);
 	console.log("Is 'the_cat' a 'Cat'?", the_cat._belongs(Cat)); // true
 	I.am(the_cat);
@@ -78,5 +75,4 @@
 	console.log("Before '10 hour', 'satiety':", I.how(satiety)); // 1.2
 	world.pass(10*hour, hour);
 	console.log("After  '10 hour', 'satiety':", I.how(satiety)); // 1.20000000000000004
-	console.log("Am 'I' 'hungry'?", I._am(hungry)); // true
-	```
+	console.log("Am 'I' 'hungry'?", I._am(hungry)); // true	```

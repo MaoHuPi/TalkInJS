@@ -1,4 +1,4 @@
-import {the, Something, Ordinal, State, Pronoun, Timeline, StateValuePair, thingsInit} from './talkin.mjs';
+import {the, Something, Ordinal, State, Pronoun, Timeline, StateValuePair, thingsInit} from '../src/talkin.mjs';
 
 /* Personal Pronoun */
 // const I = new Pronoun(new Ordinal(1));
